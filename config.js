@@ -5,5 +5,5 @@ window.APP_CONFIG = {
   googleApiKey: "AIzaSyAkOvYy_BD0lI2n4soDku5nW77mVvdZ0rE",
   // 商圏の初期値（km）
   r1: 1,
-  r2: 3,
+  r2: 2,
 };

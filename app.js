@@ -151,14 +151,14 @@
     },
     draw(fit) {
       const [r1, r2] = radii(), { lat, lon } = cur;
-      const accent = "#0d7a84", rival = "#cf3f52", grey = "#7d8f93";
+      const accent = "#cf5516", rival = "#2b5c9e", grey = "#8a7d72";
       if (USE_GOOGLE) {
         this.objs.forEach((o) => o.setMap(null)); this.objs = [];
         const G = google.maps, add = (o) => this.objs.push(o);
         add(new G.Circle({ map: this.g, center: { lat, lng: lon }, radius: r1 * 1000, strokeColor: accent, strokeWeight: 3, fillColor: accent, fillOpacity: 0.08, clickable: false }));
         add(new G.Circle({ map: this.g, center: { lat, lng: lon }, radius: r2 * 1000, strokeColor: accent, strokeWeight: 2, strokeOpacity: 0.9, fillOpacity: 0, clickable: false }));
         add(new G.Marker({ map: this.g, position: { lat, lng: lon }, zIndex: 999, title: "候補地",
-          icon: { path: "M0,-11 L11,0 L0,11 L-11,0 Z", fillColor: "#11262b", fillOpacity: 1, strokeColor: "#fff", strokeWeight: 2, scale: 1 } }));
+          icon: { path: "M0,-11 L11,0 L0,11 L-11,0 Z", fillColor: "#cf5516", fillOpacity: 1, strokeColor: "#fff", strokeWeight: 2, scale: 1.2 } }));
         cur.comps.forEach((c, i) => {
           const m = new G.Marker({ map: this.g, position: { lat: c.lat, lng: c.lon }, zIndex: 500 - i, title: c.name,
             label: { text: String(i + 1), color: "#fff", fontSize: "11px", fontWeight: "700" },

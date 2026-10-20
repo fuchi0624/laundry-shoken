@@ -1,14 +1,14 @@
 /* 1カラムの操作画面: 住所と商圏 → 数字 → 地図 → 近い順の他社一覧 */
 :root{
-  --bg:#eef3f4; --surface:#ffffff; --fg:#11262b; --muted:#5a6f74; --line:#d3dfe1;
-  --accent:#0d7a84; --accent-soft:#d6eef0; --rival:#cf3f52; --rival-soft:#fbe3e6; --own:#11262b;
+  --bg:#fbf5ef; --surface:#ffffff; --fg:#2a1d14; --muted:#7a6a5e; --line:#ecdccd;
+  --accent:#cf5516; --accent-soft:#fde6d5; --rival:#2b5c9e; --rival-soft:#dde8f6; --own:#2a1d14;
   --f-display:"Hiragino Maru Gothic ProN","Zen Maru Gothic","Yu Gothic",sans-serif;
   --f-body:"Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#0c181b; --surface:#14252a; --fg:#e2edef; --muted:#93a8ad; --line:#24393e;
-  --accent:#43bcc6; --accent-soft:#163a3f; --rival:#f27384; --rival-soft:#3d1d23; --own:#f4f8f9; color-scheme:dark}}
+  --bg:#1a120c; --surface:#251a12; --fg:#f5ebe2; --muted:#b8a596; --line:#3b2a1e;
+  --accent:#ff8a3d; --accent-soft:#4a2a14; --rival:#6fa1e6; --rival-soft:#1d2b40; --own:#fff4ea; color-scheme:dark}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.6}
@@ -51,11 +51,11 @@ input{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);bord
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:.8rem;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:12px;height:12px;border-radius:50%;background:var(--rival);display:inline-block}
-.dot.own{background:var(--own);border-radius:2px;transform:rotate(45deg);width:10px;height:10px}
+.dot.own{background:var(--accent);border-radius:2px;transform:rotate(45deg);width:10px;height:10px}
 .ring{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent);display:inline-block} .ring.dash{border-style:dashed}
-.pin{background:#cf3f52;color:#fff;border:2px solid #fff;border-radius:50%;display:grid!important;place-items:center;font:700 11px/1 var(--f-body);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.pin{background:#2b5c9e;color:#fff;border:2px solid #fff;border-radius:50%;display:grid!important;place-items:center;font:700 11px/1 var(--f-body);box-shadow:0 1px 3px rgba(0,0,0,.35)}
 .pin.out{background:#7d8f93} .pin.on{transform:scale(1.3)}
-.pin-own{display:block;width:18px;height:18px;background:#11262b;border:2px solid #fff;transform:rotate(45deg);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.pin-own{display:block;width:18px;height:18px;background:#cf5516;border:2px solid #fff;transform:rotate(45deg);box-shadow:0 1px 3px rgba(0,0,0,.35)}
 .list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .item{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer}
 .item.active{border-color:var(--rival);box-shadow:0 0 0 2px var(--rival-soft)}
