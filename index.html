@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ランドリー商圏ナビ</title>
+<meta name="theme-color" content="#0d7a84">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="商圏ナビ">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ランドリー商圏ナビ</h1>
+    <p class="small muted">住所を入れると、商圏の人口・世帯数と周辺のコインランドリーを調べます。</p>
+  </header>
+
+  <section class="panel">
+    <form id="form" class="grid">
+      <label for="addr" class="lbl">候補地の住所</label>
+      <div class="row">
+        <input id="addr" type="text" placeholder="例: 佐賀県唐津市鏡4640-1" autocomplete="street-address" enterkeyhint="search">
+        <button class="btn" id="go" type="submit">調べる</button>
+      </div>
+      <div class="radius">
+        <label for="r1"><span class="ring-tag"><span class="swatch"></span>第1商圏（km）</span>
+          <span class="ctl"><button type="button" class="step" data-t="r1" data-d="-0.5" aria-label="狭く">−</button><input id="r1" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal"><button type="button" class="step" data-t="r1" data-d="0.5" aria-label="広く">＋</button></span>
+        </label>
+        <label for="r2"><span class="ring-tag"><span class="swatch dash"></span>第2商圏（km）</span>
+          <span class="ctl"><button type="button" class="step" data-t="r2" data-d="-0.5" aria-label="狭く">−</button><input id="r2" type="number" min="0.5" max="10" step="0.5" value="3" inputmode="decimal"><button type="button" class="step" data-t="r2" data-d="0.5" aria-label="広く">＋</button></span>
+        </label>
+      </div>
+      <div id="recent" class="recent"></div>
+    </form>
+    <div class="msg" id="msg" hidden></div>
+  </section>
+
+  <div id="result" hidden>
+    <div class="small muted" id="matched"></div>
+    <section class="stats" id="stats"></section>
+
+    <section class="panel">
+      <div class="maphead"><h2>地図</h2><a class="small" id="gmap" target="_blank" rel="noopener">Googleマップで開く</a></div>
+      <div id="map"></div>
+      <div class="legend">
+        <span><i class="dot own"></i>候補地</span>
+        <span><i class="dot"></i>他社（番号は近い順）</span>
+        <span><i class="ring"></i>第1商圏</span>
+        <span><i class="ring dash"></i>第2商圏</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>周辺のコインランドリー（近い順）</h2>
+      <p class="small muted" id="compnote"></p>
+      <ol class="list" id="list"></ol>
+    </section>
+  </div>
+
+  <footer>
+    <div>人口・世帯数: 総務省統計局「令和2年国勢調査」500mメッシュを商圏の円で按分しています。</div>
+    <div id="srcnote"></div>
+    <div>住所検索・地図: 国土地理院</div>
+  </footer>
+</div>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
