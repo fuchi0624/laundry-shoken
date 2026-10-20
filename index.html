@@ -4,47 +4,59 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ランドリー商圏ナビ</title>
-<meta name="theme-color" content="#cf5516">
+<meta name="theme-color" content="#e2621b">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="商圏ナビ">
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Outfit:wght@500;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>ランドリー商圏ナビ</h1>
-    <p class="small muted">住所を入れると、商圏の人口・世帯数と周辺のコインランドリーを調べます。</p>
-  </header>
+<header class="hero">
+  <div class="hero-in">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="3.2 3"/><path d="M20 15l5 5-5 5-5-5z" fill="currentColor"/></svg>
+      <div>
+        <p class="eyebrow">COIN LAUNDRY AREA FINDER</p>
+        <h1>ランドリー商圏ナビ</h1>
+      </div>
+    </div>
+    <p class="lead">住所を入れるだけで、商圏の人口・世帯数と周辺のコインランドリーがわかります。</p>
+  </div>
+</header>
 
-  <section class="panel">
+<main class="wrap">
+  <section class="card search">
     <form id="form" class="grid">
       <label for="addr" class="lbl">候補地の住所</label>
-      <div class="row">
-        <input id="addr" type="text" placeholder="例: 佐賀県唐津市鏡4640-1" autocomplete="street-address" enterkeyhint="search">
-        <button class="btn" id="go" type="submit">調べる</button>
+      <div class="field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg>
+        <input id="addr" type="text" placeholder="住所を入力" autocomplete="street-address" enterkeyhint="search">
       </div>
       <div class="radius">
-        <label for="r1"><span class="ring-tag"><span class="swatch"></span>第1商圏（km）</span>
-          <span class="ctl"><button type="button" class="step" data-t="r1" data-d="-0.5" aria-label="狭く">−</button><input id="r1" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal"><button type="button" class="step" data-t="r1" data-d="0.5" aria-label="広く">＋</button></span>
+        <label for="r1"><span class="ring-tag"><span class="swatch"></span>第1商圏</span>
+          <span class="ctl"><button type="button" class="step" data-t="r1" data-d="-0.5" aria-label="第1商圏を狭く">−</button><span class="num-in"><input id="r1" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r1" data-d="0.5" aria-label="第1商圏を広く">＋</button></span>
         </label>
-        <label for="r2"><span class="ring-tag"><span class="swatch dash"></span>第2商圏（km）</span>
-          <span class="ctl"><button type="button" class="step" data-t="r2" data-d="-0.5" aria-label="狭く">−</button><input id="r2" type="number" min="0.5" max="10" step="0.5" value="2" inputmode="decimal"><button type="button" class="step" data-t="r2" data-d="0.5" aria-label="広く">＋</button></span>
+        <label for="r2"><span class="ring-tag"><span class="swatch dash"></span>第2商圏</span>
+          <span class="ctl"><button type="button" class="step" data-t="r2" data-d="-0.5" aria-label="第2商圏を狭く">−</button><span class="num-in"><input id="r2" type="number" min="0.5" max="10" step="0.5" value="2" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r2" data-d="0.5" aria-label="第2商圏を広く">＋</button></span>
         </label>
       </div>
+      <button class="btn" id="go" type="submit">この場所を調べる</button>
       <div id="recent" class="recent"></div>
     </form>
     <div class="msg" id="msg" hidden></div>
   </section>
 
   <div id="result" hidden>
-    <div class="small muted" id="matched"></div>
+    <p class="matched" id="matched"></p>
     <section class="stats" id="stats"></section>
 
-    <section class="panel">
-      <div class="maphead"><h2>地図</h2><a class="small" id="gmap" target="_blank" rel="noopener">Googleマップで開く</a></div>
+    <section class="card mapcard">
+      <div class="sec-head"><h2>地図</h2><a class="link" id="gmap" target="_blank" rel="noopener">Googleマップで開く ↗</a></div>
       <div id="map"></div>
       <div class="legend">
         <span><i class="dot own"></i>候補地</span>
@@ -55,18 +67,18 @@
     </section>
 
     <section>
-      <h2>周辺のコインランドリー（近い順）</h2>
-      <p class="small muted" id="compnote"></p>
+      <div class="sec-head"><h2>周辺のコインランドリー</h2><span class="sub">近い順</span></div>
+      <p class="note" id="compnote"></p>
       <ol class="list" id="list"></ol>
     </section>
   </div>
 
   <footer>
-    <div>人口・世帯数: 総務省統計局「令和2年国勢調査」500mメッシュを商圏の円で按分しています。</div>
-    <div id="srcnote"></div>
-    <div>住所検索・地図: 国土地理院</div>
+    <p>人口・世帯数: 総務省統計局「令和2年国勢調査」500mメッシュを商圏の円で按分しています。</p>
+    <p id="srcnote"></p>
+    <p>住所検索: 国土地理院</p>
   </footer>
-</div>
+</main>
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>

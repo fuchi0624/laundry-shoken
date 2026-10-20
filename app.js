@@ -151,14 +151,14 @@
     },
     draw(fit) {
       const [r1, r2] = radii(), { lat, lon } = cur;
-      const accent = "#cf5516", rival = "#2b5c9e", grey = "#8a7d72";
+      const accent = "#e2621b", rival = "#2f5f9f", grey = "#8a7d72";
       if (USE_GOOGLE) {
         this.objs.forEach((o) => o.setMap(null)); this.objs = [];
         const G = google.maps, add = (o) => this.objs.push(o);
         add(new G.Circle({ map: this.g, center: { lat, lng: lon }, radius: r1 * 1000, strokeColor: accent, strokeWeight: 3, fillColor: accent, fillOpacity: 0.08, clickable: false }));
         add(new G.Circle({ map: this.g, center: { lat, lng: lon }, radius: r2 * 1000, strokeColor: accent, strokeWeight: 2, strokeOpacity: 0.9, fillOpacity: 0, clickable: false }));
         add(new G.Marker({ map: this.g, position: { lat, lng: lon }, zIndex: 999, title: "候補地",
-          icon: { path: "M0,-11 L11,0 L0,11 L-11,0 Z", fillColor: "#cf5516", fillOpacity: 1, strokeColor: "#fff", strokeWeight: 2, scale: 1.2 } }));
+          icon: { path: "M0,-11 L11,0 L0,11 L-11,0 Z", fillColor: "#e2621b", fillOpacity: 1, strokeColor: "#fff", strokeWeight: 2, scale: 1.2 } }));
         cur.comps.forEach((c, i) => {
           const m = new G.Marker({ map: this.g, position: { lat: c.lat, lng: c.lon }, zIndex: 500 - i, title: c.name,
             label: { text: String(i + 1), color: "#fff", fontSize: "11px", fontWeight: "700" },
@@ -194,16 +194,18 @@
     const [r1, r2] = radii();
     $("#stats").innerHTML = [["第1商圏", r1, ""], ["第2商圏", r2, "dash"]].map(([label, r, cls]) => {
       const s = sumWithin(r), n = cur.comps.filter((c) => c.km <= r).length;
-      return `<article class="panel stat">
-        <h3><span class="ring-tag"><span class="swatch ${cls}"></span>${label}</span><span class="muted">半径${r}km</span></h3>
-        <div class="kpi"><span>世帯数</span><span class="big">${fmt(s.hh)}</span></div>
-        <div class="kpi"><span>他社の店舗</span><span class="big rival-n">${n}<small>店</small></span></div>
-        <dl>
-          <dt>人口</dt><dd>${fmt(s.pop)}人</dd>
-          <dt>自店を含む1店あたり世帯数</dt><dd>${fmt(s.hh / (n + 1))}世帯</dd>
-          <dt>単身世帯</dt><dd>${fmt(s.single)}世帯</dd>
-          <dt>6歳未満の子がいる世帯</dt><dd>${fmt(s.kids)}世帯</dd>
-          <dt>65歳以上がいる世帯</dt><dd>${fmt(s.senior)}世帯</dd>
+      const size = s.hh ? (s.pop / s.hh).toFixed(2) : "-";
+      return `<article class="card stat">
+        <div class="stat-top"><span class="ring-tag"><span class="swatch ${cls}"></span>${label}</span><span class="radius-pill">半径 ${r}km</span></div>
+        <div class="hero-num"><span class="label">世帯数</span><span class="value">${fmt(s.hh)}</span><span class="unit">世帯</span></div>
+        <div class="rival-bar"><span>他社のコインランドリー</span><b>${n}<small>店</small></b></div>
+        <dl class="tiles">
+          <div><dt>人口</dt><dd>${fmt(s.pop)}<small>人</small></dd></div>
+          <div><dt>自店を含む1店あたり</dt><dd>${fmt(s.hh / (n + 1))}<small>世帯</small></dd></div>
+          <div><dt>単身世帯</dt><dd>${fmt(s.single)}<small>世帯</small></dd></div>
+          <div><dt>6歳未満の子がいる</dt><dd>${fmt(s.kids)}<small>世帯</small></dd></div>
+          <div><dt>65歳以上がいる</dt><dd>${fmt(s.senior)}<small>世帯</small></dd></div>
+          <div><dt>平均世帯人員</dt><dd>${size}<small>人</small></dd></div>
         </dl></article>`;
     }).join("");
   }

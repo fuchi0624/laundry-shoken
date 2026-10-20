@@ -1,2 +1,2 @@
-{"name":"ランドリー商圏ナビ","short_name":"商圏ナビ","start_url":"./","scope":"./","display":"standalone","background_color":"#fbf5ef","theme_color":"#cf5516","lang":"ja",
+{"name":"ランドリー商圏ナビ","short_name":"商圏ナビ","start_url":"./","scope":"./","display":"standalone","background_color":"#f7f1ea","theme_color":"#e2621b","lang":"ja",
  "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
