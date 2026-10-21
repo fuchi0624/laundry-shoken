@@ -77,6 +77,7 @@
   }
 
   // ---------------------------------------------------------------- 他社店舗
+  const CLEANING_NAME = /クリーニング|ｸﾘｰﾆﾝｸﾞ|cleaning|ドライ|白洋舎|ホワイト急便|うさちゃん|ポニー/i;
   const LAUNDRY_NAME = /ランドリー|らんどりー|laundry|wash|ウォッシュ|ウオッシュ|コイン|洗濯|ざぶざぶ|アクア/i;
 
   async function compsGoogle(lat, lon, rKm) {
@@ -84,11 +85,16 @@
     // 半径に応じて範囲を分け、1回20件の上限で取りこぼさないようにする
     const n = rKm <= 2 ? 1 : rKm <= 5 ? 2 : 3;
     const dlat = rKm / 110.57, dlon = rKm / (111.32 * Math.cos(lat * Math.PI / 180));
+    // 2通りで探す: ①「コインランドリー」で検索 ②Googleが「ランドリー」に分類しているお店（店名は問わない）
+    const queries = [
+      { textQuery: "コインランドリー" },
+      { textQuery: "コインランドリー 洗濯 乾燥", includedType: "laundry", useStrictTypeFiltering: true },
+    ];
     const jobs = [];
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    for (const q of queries) for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
       const s = lat - dlat + 2 * dlat * i / n, w = lon - dlon + 2 * dlon * j / n;
       jobs.push(Place.searchByText({
-        textQuery: "コインランドリー",
+        ...q,
         fields: ["id", "displayName", "formattedAddress", "location", "businessStatus", "googleMapsURI"],
         locationRestriction: { south: s, west: w, north: s + 2 * dlat / n, east: w + 2 * dlon / n },
         maxResultCount: 20, language: "ja", region: "jp",
@@ -101,17 +107,20 @@
     for (const p of lists.flat()) {
       if (seen.has(p.id) || p.businessStatus === "CLOSED_PERMANENTLY") continue;
       const name = p.displayName || "";
-      if (!LAUNDRY_NAME.test(name)) { excluded++; seen.set(p.id, null); continue; }
+      // 店名にランドリー等が無く「クリーニング」だけの店は、クリーニング専門店とみなして除く
+      const named = LAUNDRY_NAME.test(name);
+      if (!named && CLEANING_NAME.test(name)) { excluded++; seen.set(p.id, null); continue; }
       const la = p.location.lat(), lo = p.location.lng();
       seen.set(p.id, {
         name, address: (p.formattedAddress || "").replace(/^日本、(〒\d{3}-\d{4} )?/, ""),
         lat: la, lon: lo, km: distKm(lat, lon, la, lo), url: p.googleMapsURI,
-        closed: p.businessStatus === "CLOSED_TEMPORARILY",
+        closed: p.businessStatus === "CLOSED_TEMPORARILY", unsure: !named,
       });
     }
     const comps = [...seen.values()].filter(Boolean).filter((c) => c.km <= rKm * 1.42);
-    let note = "Googleマップで「コインランドリー」を検索した結果です。";
-    if (excluded) note += `名前にランドリー等が入っていない${excluded}件（クリーニング店など）は除いています。`;
+    let note = "Googleマップで「コインランドリー」を検索した結果と、Googleがランドリーに分類しているお店です。";
+    if (comps.some((c) => c.unsure)) note += "店名にランドリー等が入っていないお店には「要確認」と付けています。";
+    if (excluded) note += `店名が「クリーニング」だけのお店${excluded}件は除いています。`;
     if (full) note += "店が多い地域のため、一部の店が出ていない可能性があります。";
     return { comps, note };
   }
@@ -193,12 +202,12 @@
   function renderStats() {
     const [r1, r2] = radii();
     $("#stats").innerHTML = [["第1商圏", r1, ""], ["第2商圏", r2, "dash"]].map(([label, r, cls]) => {
-      const s = sumWithin(r), n = cur.comps.filter((c) => c.km <= r).length;
+      const s = sumWithin(r), inR = cur.comps.filter((c) => c.km <= r), n = inR.length, u = inR.filter((c) => c.unsure).length;
       const size = s.hh ? (s.pop / s.hh).toFixed(2) : "-";
       return `<article class="card stat">
         <div class="stat-top"><span class="ring-tag"><span class="swatch ${cls}"></span>${label}</span><span class="radius-pill">半径 ${r}km</span></div>
         <div class="hero-num"><span class="label">世帯数</span><span class="value">${fmt(s.hh)}</span><span class="unit">世帯</span></div>
-        <div class="rival-bar"><span>他社のコインランドリー</span><b>${n}<small>店</small></b></div>
+        <div class="rival-bar"><span>他社のコインランドリー</span><b>${n}<small>店${u ? `（うち要確認${u}）` : ""}</small></b></div>
         <dl class="tiles">
           <div><dt>人口</dt><dd>${fmt(s.pop)}<small>人</small></dd></div>
           <div><dt>自店を含む1店あたり</dt><dd>${fmt(s.hh / (n + 1))}<small>世帯</small></dd></div>
@@ -227,6 +236,7 @@
       li.querySelector(".addr").textContent = c.address;
       const chips = li.querySelector(".chips");
       if (c.hours) { const s = document.createElement("span"); s.className = "small"; s.textContent = "営業 " + c.hours; chips.appendChild(s); }
+      if (c.unsure) { const s = document.createElement("span"); s.className = "chip out"; s.textContent = "要確認（店名にランドリーなし）"; chips.appendChild(s); }
       if (c.closed) { const s = document.createElement("span"); s.className = "chip warn"; s.textContent = "臨時休業中"; chips.appendChild(s); }
       li.querySelector("a").href = c.url || `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`;
       ol.appendChild(li);
