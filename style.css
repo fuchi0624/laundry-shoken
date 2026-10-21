@@ -21,7 +21,13 @@ body{margin:0;overflow-x:clip;width:100%;background:var(--bg);color:var(--fg);fo
 h1,h2,h3,p{margin:0}
 a{color:var(--accent-deep)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
-.gutter,.hero-in,.wrap{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.gutter,.hero-in,.wrap,.lp-in{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+
+/* ---- ランドリープレスのロゴ帯 */
+.lp-bar{background:#fff;border-bottom:3px solid #eb6d00}
+.lp-in{max-width:720px;margin:0 auto;padding-block:max(10px,calc(env(safe-area-inset-top,0px) + 6px)) 10px;display:flex;align-items:flex-end;gap:10px}
+.lp-mark{height:44px;width:auto;flex:none}
+.lp-rog{height:22px;width:auto;max-width:calc(100% - 50px);object-fit:contain;margin-bottom:3px}
 
 /* ---- 上の帯 */
 .hero{background:var(--accent);color:var(--on-accent);
@@ -29,7 +35,7 @@ a{color:var(--accent-deep)}
                    radial-gradient(circle at 92% -10%,transparent 0 34%,rgba(255,255,255,.14) 34.3% 34.8%,transparent 35%),
                    radial-gradient(circle at 92% -10%,transparent 0 47%,rgba(255,255,255,.10) 47.3% 47.8%,transparent 48%)}
 @media (prefers-color-scheme:dark){.hero{background-color:#c4541a;color:#fff}}
-.hero-in{max-width:720px;margin:0 auto;padding-block:max(22px,calc(env(safe-area-inset-top,0px) + 14px)) 64px;display:grid;gap:10px}
+.hero-in{max-width:720px;margin:0 auto;padding-block:20px 64px;display:grid;gap:10px}
 .brand{display:flex;align-items:center;gap:12px}
 .logo{width:42px;height:42px;flex:none}
 .eyebrow{font-family:var(--f-num);font-weight:500;font-size:.66rem;letter-spacing:.18em;opacity:.85}
