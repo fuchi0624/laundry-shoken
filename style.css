@@ -67,12 +67,12 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.12rem}
 .ring-tag{display:inline-flex;align-items:center;gap:7px}
 .swatch{width:18px;height:0;border-top:3px solid var(--accent);border-radius:2px}
 .swatch.dash{border-top-style:dashed}
-.ctl{display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:14px;padding:4px}
+.ctl{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:14px;padding:4px}
 .num-in{flex:1;min-width:0;display:flex;align-items:baseline;justify-content:center;gap:2px}
-.num-in input{width:100%;min-width:0;max-width:3.2em;border:0;background:transparent;text-align:right;font-family:var(--f-num);font-weight:700;font-size:1.2rem;color:var(--fg);padding:4px 0;-moz-appearance:textfield}
+.num-in input{width:100%;min-width:0;max-width:3.4em;border:0;background:transparent;text-align:right;font-family:var(--f-num);font-weight:700;font-size:1.1rem;color:var(--fg);padding:4px 0;-moz-appearance:textfield}
 .num-in input::-webkit-inner-spin-button,.num-in input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .num-in i{font-style:normal;font-size:.78rem;color:var(--muted)}
-.step{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:var(--surface);color:var(--accent-deep);font-size:1.15rem;font-weight:700;box-shadow:0 1px 2px rgba(80,40,10,.12);cursor:pointer}
+.step{flex:none;width:32px;height:36px;border-radius:10px;border:0;background:var(--surface);color:var(--accent-deep);font-size:1.15rem;font-weight:700;box-shadow:0 1px 2px rgba(80,40,10,.12);cursor:pointer}
 .step:active{transform:scale(.94)}
 .btn{font:inherit;font-family:var(--f-display);font-weight:800;font-size:1.02rem;letter-spacing:.04em;border:0;border-radius:14px;padding:15px 20px;background:var(--accent);color:var(--on-accent);cursor:pointer;box-shadow:0 6px 16px rgba(226,98,27,.32);transition:transform .1s}
 .btn:active{transform:translateY(1px)}
@@ -146,5 +146,6 @@ h2{font-family:var(--f-display);font-weight:800;font-size:1.12rem}
 footer{display:grid;gap:4px;font-size:.74rem;color:var(--muted);padding:8px 4px 0}
 
 @media (max-width:460px){.stats{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:350px){.radius{grid-template-columns:minmax(0,1fr)}.hero-num .value{font-size:2rem}}
+@media (max-width:379px){.radius{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:350px){.hero-num .value{font-size:2rem}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}

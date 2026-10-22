@@ -52,10 +52,11 @@
     }
     return cells;
   }
-  function sumWithin(r) {
+  // 中心から rIn より外、rOut 以内（rIn=0 なら円の中すべて）の人口・世帯を数える
+  function sumWithin(rOut, rIn = 0) {
     const t = [0, 0, 0, 0, 0];
     for (const c of cur.cells) {
-      let n = 0; for (const d of c.d) if (d <= r) n++;
+      let n = 0; for (const d of c.d) if (d > rIn && d <= rOut) n++;
       if (!n) continue;
       const f = n / c.d.length;
       for (let k = 0; k < 5; k++) t[k] += c.v[k] * f;
@@ -63,8 +64,8 @@
     return { pop: t[0], hh: t[1], single: t[2], kids: t[3], senior: t[4] };
   }
   const radii = () => [
-    Math.min(10, Math.max(0.5, +$("#r1").value || CFG.r1 || 1)),
-    Math.min(10, Math.max(0.5, +$("#r2").value || CFG.r2 || 3)),
+    Math.min(10, Math.max(0.25, +$("#r1").value || CFG.r1 || 1)),
+    Math.min(10, Math.max(0.25, +$("#r2").value || CFG.r2 || 2)),
   ];
 
   // ---------------------------------------------------------------- 住所検索（国土地理院）
@@ -201,16 +202,19 @@
   // ---------------------------------------------------------------- 表示
   function renderStats() {
     const [r1, r2] = radii();
-    $("#stats").innerHTML = [["第1商圏", r1, ""], ["第2商圏", r2, "dash"]].map(([label, r, cls]) => {
-      const s = sumWithin(r), inR = cur.comps.filter((c) => c.km <= r), n = inR.length, u = inR.filter((c) => c.unsure).length;
+    // 第2商圏は第1商圏の外側（ドーナツ型）だけを数える
+    const lo = Math.min(r1, r2);
+    $("#stats").innerHTML = [["第1商圏", 0, r1, `半径 ${r1}km`, ""], ["第2商圏", lo, r2, `${lo}〜${r2}km`, "dash"]].map(([label, rIn, r, range, cls]) => {
+      const s = sumWithin(r, rIn), inR = cur.comps.filter((c) => c.km > rIn && c.km <= r), n = inR.length, u = inR.filter((c) => c.unsure).length;
       const size = s.hh ? (s.pop / s.hh).toFixed(2) : "-";
+      const per = rIn ? ["他社1店あたり", n ? `${fmt(s.hh / n)}<small>世帯</small>` : "他社なし"] : ["自店を含む1店あたり", `${fmt(s.hh / (n + 1))}<small>世帯</small>`];
       return `<article class="card stat">
-        <div class="stat-top"><span class="ring-tag"><span class="swatch ${cls}"></span>${label}</span><span class="radius-pill">半径 ${r}km</span></div>
+        <div class="stat-top"><span class="ring-tag"><span class="swatch ${cls}"></span>${label}</span><span class="radius-pill">${range}</span></div>
         <div class="hero-num"><span class="label">世帯数</span><span class="value">${fmt(s.hh)}</span><span class="unit">世帯</span></div>
         <div class="rival-bar"><span>他社のコインランドリー</span><b>${n}<small>店${u ? `（うち要確認${u}）` : ""}</small></b></div>
         <dl class="tiles">
           <div><dt>人口</dt><dd>${fmt(s.pop)}<small>人</small></dd></div>
-          <div><dt>自店を含む1店あたり</dt><dd>${fmt(s.hh / (n + 1))}<small>世帯</small></dd></div>
+          <div><dt>${per[0]}</dt><dd>${per[1]}</dd></div>
           <div><dt>単身世帯</dt><dd>${fmt(s.single)}<small>世帯</small></dd></div>
           <div><dt>6歳未満の子がいる</dt><dd>${fmt(s.kids)}<small>世帯</small></dd></div>
           <div><dt>65歳以上がいる</dt><dd>${fmt(s.senior)}<small>世帯</small></dd></div>
@@ -296,7 +300,7 @@
   $("#form").addEventListener("submit", (e) => { e.preventDefault(); const a = $("#addr").value.trim(); if (a) run(a); });
   ["r1", "r2"].forEach((id) => $("#" + id).addEventListener("input", () => refresh(false)));
   document.querySelectorAll(".step").forEach((b) => b.addEventListener("click", () => {
-    const el = $("#" + b.dataset.t); el.value = Math.min(10, Math.max(0.5, (+el.value || 0) + +b.dataset.d)); refresh(true);
+    const el = $("#" + b.dataset.t); el.value = Math.min(10, Math.max(0.25, Math.round(((+el.value || 0) + +b.dataset.d) * 4) / 4)); refresh(true);
   }));
   $("#list").addEventListener("click", (e) => {
     if (e.target.closest("a")) return;

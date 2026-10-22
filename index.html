@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Outfit:wght@500;700&display=swap">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <div class="lp-bar"><div class="lp-in">
@@ -42,10 +42,10 @@
       </div>
       <div class="radius">
         <label for="r1"><span class="ring-tag"><span class="swatch"></span>第1商圏</span>
-          <span class="ctl"><button type="button" class="step" data-t="r1" data-d="-0.5" aria-label="第1商圏を狭く">−</button><span class="num-in"><input id="r1" type="number" min="0.5" max="10" step="0.5" value="1" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r1" data-d="0.5" aria-label="第1商圏を広く">＋</button></span>
+          <span class="ctl"><button type="button" class="step" data-t="r1" data-d="-0.25" aria-label="第1商圏を狭く">−</button><span class="num-in"><input id="r1" type="number" min="0.25" max="10" step="0.25" value="1" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r1" data-d="0.25" aria-label="第1商圏を広く">＋</button></span>
         </label>
         <label for="r2"><span class="ring-tag"><span class="swatch dash"></span>第2商圏</span>
-          <span class="ctl"><button type="button" class="step" data-t="r2" data-d="-0.5" aria-label="第2商圏を狭く">−</button><span class="num-in"><input id="r2" type="number" min="0.5" max="10" step="0.5" value="2" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r2" data-d="0.5" aria-label="第2商圏を広く">＋</button></span>
+          <span class="ctl"><button type="button" class="step" data-t="r2" data-d="-0.25" aria-label="第2商圏を狭く">−</button><span class="num-in"><input id="r2" type="number" min="0.25" max="10" step="0.25" value="2" inputmode="decimal"><i>km</i></span><button type="button" class="step" data-t="r2" data-d="0.25" aria-label="第2商圏を広く">＋</button></span>
         </label>
       </div>
       <button class="btn" id="go" type="submit">この場所を調べる</button>
@@ -84,6 +84,6 @@
 </main>
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="config.js?v=3"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
