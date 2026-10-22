@@ -96,7 +96,7 @@
       const s = lat - dlat + 2 * dlat * i / n, w = lon - dlon + 2 * dlon * j / n;
       jobs.push(Place.searchByText({
         ...q,
-        fields: ["id", "displayName", "formattedAddress", "location", "businessStatus", "googleMapsURI"],
+        fields: ["id", "displayName", "formattedAddress", "location", "businessStatus", "googleMapsURI", "photos"],
         locationRestriction: { south: s, west: w, north: s + 2 * dlat / n, east: w + 2 * dlon / n },
         maxResultCount: 20, language: "ja", region: "jp",
       }).then((r) => r.places).catch(() => []));
@@ -116,6 +116,11 @@
         name, address: (p.formattedAddress || "").replace(/^日本、(〒\d{3}-\d{4} )?/, ""),
         lat: la, lon: lo, km: distKm(lat, lon, la, lo), url: p.googleMapsURI,
         closed: p.businessStatus === "CLOSED_TEMPORARILY", unsure: !named,
+        photo: p.photos && p.photos[0] ? {
+          // 写真は印刷するときだけ読み込む（読み込むたびに料金がかかるため）
+          src: () => p.photos[0].getURI({ maxWidth: 640 }),
+          by: (p.photos[0].authorAttributions || []).map((a) => a.displayName).filter(Boolean).join("、"),
+        } : null,
       });
     }
     const comps = [...seen.values()].filter(Boolean).filter((c) => c.km <= rKm * 1.42);
@@ -136,6 +141,7 @@
         name: t.name || "（名前なし）",
         address: [t["addr:province"], t["addr:city"], t["addr:quarter"], t["addr:neighbourhood"], t["addr:block_number"], t["addr:housenumber"]].filter(Boolean).join("") || "",
         lat: la, lon: lo, km: distKm(lat, lon, la, lo), hours: t.opening_hours,
+        photo: /^https:\/\//.test(t.image || "") ? { src: () => t.image, by: "" } : null,
       };
     });
     return { comps, note: "OpenStreetMap に登録されたお店です。登録されていない店が多いため、実際より少なく出ます。" };
@@ -258,21 +264,57 @@
   }
 
   // ---------------------------------------------------------------- A4印刷用
+  const NEAR = 3, TABLE_MAX = 10;
   function renderPrint() {
     const [r1, r2] = radii(), d = new Date();
     $("#pmeta").textContent = `候補地: ${cur.address}　｜　第1商圏 ${r1}km・第2商圏 ${r2}km　｜　作成日 ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    $("#psrc").textContent = "人口・世帯数: 総務省統計局「令和2年国勢調査」500mメッシュを商圏の円で按分　｜　" + $("#srcnote").textContent;
+    const ring = (c) => (c.km <= r1 ? "第1商圏" : c.km <= r2 ? "第2商圏" : "商圏外");
+    const label = (c) => c.name + (c.unsure ? "（要確認）" : "") + (c.closed ? "（臨時休業中）" : "");
+    // 近い順に3店を写真つきで
+    const near = $("#pnear"); near.textContent = "";
+    const h = document.createElement("h3"); h.textContent = "候補地から近い他社コインランドリー"; near.appendChild(h);
+    const row = document.createElement("div"); row.className = "pnear-row"; near.appendChild(row);
+    cur.comps.slice(0, NEAR).forEach((c, i) => {
+      const card = document.createElement("article"); card.className = "pcard";
+      card.innerHTML = `<div class="pphoto"><span>写真なし</span></div><div class="pbody"><p class="pname"><b>${i + 1}</b><span></span></p><p class="pinfo"></p><p class="paddr"></p><p class="pby"></p></div>`;
+      card.querySelector(".pname span").textContent = label(c);
+      card.querySelector(".pinfo").textContent = `${c.km.toFixed(2)}km・${ring(c)}`;
+      card.querySelector(".paddr").textContent = c.address;
+      if (c.photo) {
+        const img = document.createElement("img"); img.alt = ""; img.dataset.idx = i;
+        card.querySelector(".pphoto").replaceChildren(img);
+        card.querySelector(".pby").textContent = c.photo.by ? `写真: ${c.photo.by}（Google）` : "";
+      }
+      row.appendChild(card);
+    });
+    if (!cur.comps.length) { const p = document.createElement("p"); p.textContent = "近くに他社のコインランドリーは見つかりませんでした。"; row.appendChild(p); }
+    // 第2商圏までの一覧（多いときは先頭から）
     const t = $("#ptable"); t.textContent = "";
     const rows = cur.comps.map((c, i) => [i + 1, c]).filter(([, c]) => c.km <= r2);
-    t.innerHTML = `<caption>第2商圏までの他社コインランドリー（${rows.length}店・番号は地図と同じ）</caption>
-      <thead><tr><th>No.</th><th>店名</th><th>住所</th><th>距離</th><th>商圏</th></tr></thead><tbody></tbody>`;
+    t.innerHTML = `<caption>第2商圏までの他社（${rows.length}店・番号は地図と同じ）</caption>
+      <thead><tr><th>No.</th><th>店名</th><th>距離</th><th>商圏</th></tr></thead><tbody></tbody>`;
     const tb = t.querySelector("tbody");
-    if (!rows.length) tb.innerHTML = '<tr><td colspan="5">第2商圏の中に他社のコインランドリーは見つかりませんでした。</td></tr>';
-    for (const [no, c] of rows) {
+    if (!rows.length) tb.innerHTML = '<tr><td colspan="4">第2商圏の中に他社は見つかりませんでした。</td></tr>';
+    for (const [no, c] of rows.slice(0, TABLE_MAX)) {
       const tr = document.createElement("tr");
-      [no, c.name + (c.unsure ? "（要確認）" : "") + (c.closed ? "（臨時休業中）" : ""), c.address, c.km.toFixed(2) + "km", c.km <= r1 ? "第1" : "第2"]
+      [no, label(c), c.km.toFixed(2) + "km", ring(c).replace("商圏", "")]
         .forEach((v) => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
       tb.appendChild(tr);
     }
+    if (rows.length > TABLE_MAX) tb.insertAdjacentHTML("beforeend", `<tr><td colspan="4" class="more">ほか ${rows.length - TABLE_MAX}店（アプリの一覧をご覧ください）</td></tr>`);
+  }
+  // 印刷の直前に写真を読み込み、読み終わるのを待つ（最大5秒）
+  function loadPhotos() {
+    const imgs = [...document.querySelectorAll("#pnear img")];
+    return Promise.race([
+      Promise.all(imgs.map((img) => new Promise((ok) => {
+        if (!img.src) { try { img.src = cur.comps[+img.dataset.idx].photo.src(); } catch (e) { return ok(); } }
+        if (img.complete) return ok();
+        img.onload = img.onerror = () => ok();
+      }))),
+      new Promise((ok) => setTimeout(ok, 5000)),
+    ]);
   }
   // 地図を印刷用の大きさにしてから印刷する（地図の読み込みを少し待つ）
   let printing = false;
@@ -284,9 +326,10 @@
     if (!printing) return; printing = false;
     document.body.classList.remove("printing"); setTimeout(() => map.draw(true), 50);
   }
-  $("#printBtn").addEventListener("click", () => {
+  $("#printBtn").addEventListener("click", async () => {
     enterPrint();
-    setTimeout(() => window.print(), 1500);
+    await Promise.all([loadPhotos(), new Promise((ok) => setTimeout(ok, 1500))]);
+    window.print();
   });
   window.addEventListener("beforeprint", () => { if (cur) enterPrint(); });
   window.addEventListener("afterprint", leavePrint);
