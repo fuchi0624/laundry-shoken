@@ -264,7 +264,7 @@
   }
 
   // ---------------------------------------------------------------- A4印刷用
-  const NEAR = 3, TABLE_MAX = 10;
+  const NEAR = 3, TABLE_MAX = 8;
   function renderPrint() {
     const [r1, r2] = radii(), d = new Date();
     $("#pmeta").textContent = `候補地: ${cur.address}　｜　第1商圏 ${r1}km・第2商圏 ${r2}km　｜　作成日 ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;

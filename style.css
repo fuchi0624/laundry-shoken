@@ -162,7 +162,7 @@ body.printing #map{width:640px;max-width:none;height:420px;aspect-ratio:auto}
   html,body{background:#fff !important;font-size:9pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .lp-bar,.hero,.card.search,.pbar,footer,#list,#compnote,.sec-head,.leaflet-control-zoom,.gmnoprint,.gm-fullscreen-control{display:none !important}
   .wrap{max-width:none;margin:0;padding:0}
-  #result{display:grid;grid-template-columns:168mm minmax(0,1fr);grid-template-areas:"head head" "map stats" "near list";gap:3.5mm 4mm}
+  #result{display:grid;grid-template-columns:minmax(0,60fr) minmax(0,40fr);grid-template-areas:"head head" "map stats" "near list";gap:3.5mm 4mm}
   .phead{grid-area:head;display:flex;align-items:center;gap:5mm;border-bottom:.6mm solid #eb6d00;padding-bottom:2mm}
   .phead-logo{display:flex;align-items:flex-end;gap:2mm;flex:none}
   .phead-logo img:first-child{height:11mm}
@@ -210,4 +210,25 @@ body.printing #map{width:640px;max-width:none;height:420px;aspect-ratio:auto}
   .ptable td:first-child,.ptable th:first-child{text-align:center}
   .ptable .more{color:var(--muted);text-align:left !important}
   #result>*{break-inside:avoid}
+}
+/* ---- A4横1枚に必ず収める（高さを固定し、はみ出す分は切る） */
+@media print{
+  html,body{height:auto;margin:0}
+  main.wrap{display:block}
+  #result{height:182mm;overflow:hidden;grid-template-rows:17mm 102mm minmax(0,1fr);align-items:stretch}
+  #result>*{min-height:0;overflow:hidden}
+  .phead{padding-bottom:1.5mm}
+  .phead-title{min-width:0}
+  .phead-title p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mapcard{display:flex;flex-direction:column}
+  #map,body.printing #map{flex:1;height:auto;min-height:0}
+  .stats{grid-template-rows:repeat(2,minmax(0,1fr));align-content:stretch}
+  .stat{overflow:hidden;align-content:start}
+  .pnear{display:flex;flex-direction:column}
+  .pnear-row{flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+  .pcard{display:flex;flex-direction:column;min-height:0}
+  .pphoto{flex:1;height:auto;min-height:0}
+  .pbody{flex:none}
+  .pname span,.paddr,.pby{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ptable td{height:4.4mm;line-height:1.2}
 }
