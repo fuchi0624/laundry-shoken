@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Outfit:wght@500;700&display=swap">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <div class="lp-bar"><div class="lp-in">
@@ -55,7 +55,11 @@
   </section>
 
   <div id="result" hidden>
-    <p class="matched" id="matched"></p>
+    <div class="phead" id="phead">
+      <div class="phead-logo"><img src="lp-mark.png" alt=""><img src="lp-rog.png" alt="Laundry Press"></div>
+      <div class="phead-title"><h2>コインランドリー商圏レポート</h2><p id="pmeta"></p></div>
+    </div>
+    <div class="pbar"><p class="matched" id="matched"></p><button type="button" class="btn ghost" id="printBtn">A4で印刷・PDF保存</button></div>
     <section class="stats" id="stats"></section>
 
     <section class="card mapcard">
@@ -73,6 +77,7 @@
       <div class="sec-head"><h2>周辺のコインランドリー</h2><span class="sub">近い順</span></div>
       <p class="note" id="compnote"></p>
       <ol class="list" id="list"></ol>
+      <table class="ptable" id="ptable"></table>
     </section>
   </div>
 
@@ -84,6 +89,6 @@
 </main>
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="config.js?v=3"></script>
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

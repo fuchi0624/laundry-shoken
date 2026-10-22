@@ -254,8 +254,42 @@
   function refresh(fit) {
     if (!cur) return;
     store.set("radius", radii());
-    renderStats(); renderList(); map.draw(fit);
+    renderStats(); renderList(); renderPrint(); map.draw(fit);
   }
+
+  // ---------------------------------------------------------------- A4印刷用
+  function renderPrint() {
+    const [r1, r2] = radii(), d = new Date();
+    $("#pmeta").textContent = `候補地: ${cur.address}　｜　第1商圏 ${r1}km・第2商圏 ${r2}km　｜　作成日 ${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    const t = $("#ptable"); t.textContent = "";
+    const rows = cur.comps.map((c, i) => [i + 1, c]).filter(([, c]) => c.km <= r2);
+    t.innerHTML = `<caption>第2商圏までの他社コインランドリー（${rows.length}店・番号は地図と同じ）</caption>
+      <thead><tr><th>No.</th><th>店名</th><th>住所</th><th>距離</th><th>商圏</th></tr></thead><tbody></tbody>`;
+    const tb = t.querySelector("tbody");
+    if (!rows.length) tb.innerHTML = '<tr><td colspan="5">第2商圏の中に他社のコインランドリーは見つかりませんでした。</td></tr>';
+    for (const [no, c] of rows) {
+      const tr = document.createElement("tr");
+      [no, c.name + (c.unsure ? "（要確認）" : "") + (c.closed ? "（臨時休業中）" : ""), c.address, c.km.toFixed(2) + "km", c.km <= r1 ? "第1" : "第2"]
+        .forEach((v) => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+      tb.appendChild(tr);
+    }
+  }
+  // 地図を印刷用の大きさにしてから印刷する（地図の読み込みを少し待つ）
+  let printing = false;
+  function enterPrint() {
+    if (printing) return; printing = true;
+    document.body.classList.add("printing"); map.draw(true);
+  }
+  function leavePrint() {
+    if (!printing) return; printing = false;
+    document.body.classList.remove("printing"); setTimeout(() => map.draw(true), 50);
+  }
+  $("#printBtn").addEventListener("click", () => {
+    enterPrint();
+    setTimeout(() => window.print(), 1500);
+  });
+  window.addEventListener("beforeprint", () => { if (cur) enterPrint(); });
+  window.addEventListener("afterprint", leavePrint);
   function msg(text, err) { const m = $("#msg"); m.textContent = text; m.classList.toggle("err", !!err); m.hidden = !text; }
 
   async function run(addr) {
